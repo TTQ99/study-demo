@@ -4,9 +4,14 @@
   "description": "",
   "main": "Twebpack.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node ./lib/Twebpack.js"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@babel/parser": "^7.12.5",
+    "@babel/traverse": "^7.12.5"
+  }
 }
