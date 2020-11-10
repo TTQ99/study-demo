@@ -25,7 +25,7 @@ const Parser = {
       // sourceType 指明分析代码的模式 可选 script module unambiguous（模糊），默认是script
       sourceType: 'module'
     })
-    console.log(ast);
+    // console.log(ast);
     writeFile('ast.json', ast)
     return ast
   },
@@ -33,9 +33,11 @@ const Parser = {
   // 通过babel/traverse 获取入口文件的依赖
   getDependecies (ast, filename) {
     const dependecies = {}
+    // traverse 可以遍历ast 的所有节点
     traverse(ast, {
+      // 遍历ast 遇到 import 语句 的回调
       ImportDeclaration ({ node }) {
-        // console.log(node);
+        console.log(111111111111, node);
         const dirname = path.dirname(filename)
         const filepath = `./${path.join(dirname, node.source.value)}`
         dependecies[node.source.value] = filepath
