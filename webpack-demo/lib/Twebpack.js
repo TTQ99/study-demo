@@ -14,7 +14,6 @@ const writeFile = function (name, file) {
     console.log('文件已被保存');
   })
 }
-
 const Parser = {
   // 读取入口文件，将入口js 转化成ast 语法树
   getAst (path) {
@@ -26,7 +25,6 @@ const Parser = {
       sourceType: 'module'
     })
     // console.log(ast);
-    writeFile('ast.json', ast)
     return ast
   },
 
@@ -37,45 +35,68 @@ const Parser = {
     traverse(ast, {
       // 遍历ast 遇到 import 语句 的回调
       ImportDeclaration ({ node }) {
-        console.log(111111111111, node);
         const dirname = path.dirname(filename)
-        const filepath = `./${path.join(dirname, node.source.value)}`
+        console.log(path.join('./', dirname, node.source.value))
+        // const filepath = `./${path.join(dirname, node.source.value)}`
+        const filepath = path.join('./', dirname, node.source.value)
         dependecies[node.source.value] = filepath
       }
     })
-    console.log(dependecies);
     return dependecies
   },
 
   getCode (ast) {
     // ast 转换成js 代码
-    const code = transformFromAst(ast, null, {
+    const { code } = transformFromAst(ast, null, {
       presets: ['@babel/preset-env']
     })
     return code
   }
 
 }
+
 class Compiler {
   constructor(options) {
     const { entry, output } = options
-
     this.entry = entry
     this.output = output
-
     this.modules = []
   }
 
   // 开始构建
   run () {
     const info = this.build(this.entry)
-    console.log(info);
+    this.modules.push(info)
+    // 从入口开始遍历整个
+    for (let i = 0; i < this.modules.length; i++) {
+      if (this.modules[i].dependecies) {
+        // 如果存在依赖，
+        for (const dependecy in this.modules[i].dependecies) {
+          this.modules.push(this.build(this.modules[i].dependecies[dependecy]))
+        }
+      }
+    }
+    console.log(this.modules)
+    const dependencyGraph = this.modules.reduce(
+      (graph, item) => {
+        return {
+          ...graph,
+          [item.filename]: {
+            dependecies: item.dependecies,
+            code: item.code
+          }
+        }
+      },
+      {}
+    )
+    console.log(dependencyGraph);
+    this.generate(dependencyGraph)
   }
 
   build (filename) {
     const { getAst, getDependecies, getCode } = Parser
-    const ast = getAst(this.entry)
-    const dependecies = getDependecies(ast, this.entry)
+    const ast = getAst(filename)
+    const dependecies = getDependecies(ast, filename)
     const code = getCode(ast)
     return {
       filename,
@@ -85,7 +106,28 @@ class Compiler {
   }
 
   // 输出 bundle
-  generate () { }
+  generate (code) {
+    const filePath = path.join(this.output.path, this.output.filename)
+    const bundle = `
+      (function (graph) {
+        console.log(graph);
+        function require(module) {
+          function localRequire(relativePath) {
+            console.log(graph[module].dependecies[relativePath])
+            return require(graph[module].dependecies[relativePath])
+          }
+          var exports = {};
+          (function (require, exports, code) {
+            console.log(code)
+            eval(code);
+          })(localRequire, exports, graph[module].code);
+          return exports;
+        }
+        require('${this.entry}')
+      })(${JSON.stringify(code)})
+    `
+    fs.writeFileSync(filePath, bundle, 'utf-8')
+  }
 }
 
 new Compiler(options).run()

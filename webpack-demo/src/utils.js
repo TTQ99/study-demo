@@ -1,10 +1,10 @@
-import { ttq } from './a'
+import { ttq } from './a.js'
 
-const log = function () {
+const utils = function () {
   console.log('holle ttq');
   console.log(ttq);
 }
 
 export default {
-  log
+  utils
 }
