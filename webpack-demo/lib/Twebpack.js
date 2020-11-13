@@ -5,15 +5,6 @@ const parser = require('@babel/parser')
 const traverse = require('@babel/traverse').default
 const { transformFromAst } = require('@babel/core')
 
-const writeFile = function (name, file) {
-  if (typeof file !== 'string') {
-    file = JSON.stringify(file)
-  }
-  fs.writeFile(`./ts/${name}`, file, (err) => {
-    if (err) throw err;
-    console.log('文件已被保存');
-  })
-}
 const Parser = {
   // 读取入口文件，将入口js 转化成ast 语法树
   getAst (path) {
@@ -36,9 +27,8 @@ const Parser = {
       // 遍历ast 遇到 import 语句 的回调
       ImportDeclaration ({ node }) {
         const dirname = path.dirname(filename)
-        console.log(path.join('./', dirname, node.source.value))
-        // const filepath = `./${path.join(dirname, node.source.value)}`
-        const filepath = path.join('./', dirname, node.source.value)
+        console.log(path.resolve('./', dirname, node.source.value))
+        const filepath = `./${path.join(dirname, node.source.value)}`.replace('\\', '/')
         dependecies[node.source.value] = filepath
       }
     })
@@ -89,7 +79,6 @@ class Compiler {
       },
       {}
     )
-    console.log(dependencyGraph);
     this.generate(dependencyGraph)
   }
 
@@ -118,8 +107,8 @@ class Compiler {
           }
           var exports = {};
           (function (require, exports, code) {
-            console.log(code)
             eval(code);
+            console.log(exports)
           })(localRequire, exports, graph[module].code);
           return exports;
         }

@@ -1,10 +1,6 @@
-import { ttq } from './a.js'
+import { ttq, ttx } from './a.js'
 
-const utils = function () {
-  console.log('holle ttq');
+export const utils = function () {
+  console.log('holle ' + ttx);
   console.log(ttq);
-}
-
-export default {
-  utils
 }

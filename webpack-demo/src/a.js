@@ -1,5 +1,3 @@
-const ttq = 'ttq'
 
-export default {
-  ttq
-}
+export const ttq = 'ttq'
+export const ttx = 'ttx'
