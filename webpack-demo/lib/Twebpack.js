@@ -27,8 +27,7 @@ const Parser = {
       // 遍历ast 遇到 import 语句 的回调
       ImportDeclaration ({ node }) {
         const dirname = path.dirname(filename)
-        console.log(path.resolve('./', dirname, node.source.value))
-        const filepath = `./${path.join(dirname, node.source.value)}`.replace('\\', '/')
+        const filepath = `./${path.join(dirname, node.source.value)}`
         dependecies[node.source.value] = filepath
       }
     })
@@ -60,13 +59,13 @@ class Compiler {
     // 从入口开始遍历整个
     for (let i = 0; i < this.modules.length; i++) {
       if (this.modules[i].dependecies) {
-        // 如果存在依赖，
+        // 如果存在依赖，将依赖模块添加到module中
         for (const dependecy in this.modules[i].dependecies) {
           this.modules.push(this.build(this.modules[i].dependecies[dependecy]))
         }
       }
     }
-    console.log(this.modules)
+    // 生成依赖关系
     const dependencyGraph = this.modules.reduce(
       (graph, item) => {
         return {
@@ -81,7 +80,7 @@ class Compiler {
     )
     this.generate(dependencyGraph)
   }
-
+  // 编译某个模块，得到文件名，依赖，以及代码
   build (filename) {
     const { getAst, getDependecies, getCode } = Parser
     const ast = getAst(filename)
@@ -99,19 +98,30 @@ class Compiler {
     const filePath = path.join(this.output.path, this.output.filename)
     const bundle = `
       (function (graph) {
-        console.log(graph);
+        // 声明require 函数，用来加载 通过babel 转换过的代码
         function require(module) {
+          // 当前模块依赖，调用require函数，eval执行，拿到exports
           function localRequire(relativePath) {
             console.log(graph[module].dependecies[relativePath])
             return require(graph[module].dependecies[relativePath])
           }
+          // 定义exports ，收集模块的依赖
           var exports = {};
+
+          // 通过一个个闭包，讲exports 不断向外暴露，最后得到entry的所有依赖
+
           (function (require, exports, code) {
+
+            // 执行babel转化过的代码
+
             eval(code);
-            console.log(exports)
           })(localRequire, exports, graph[module].code);
+
+          // 将export 的依赖暴露到外层
           return exports;
         }
+
+        // 从入口开始执行
         require('${this.entry}')
       })(${JSON.stringify(code)})
     `
