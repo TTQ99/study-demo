@@ -78,6 +78,7 @@ class Compiler {
       },
       {}
     )
+    console.log(dependencyGraph)
     this.generate(dependencyGraph)
   }
   // 编译某个模块，得到文件名，依赖，以及代码
@@ -92,7 +93,6 @@ class Compiler {
       code
     }
   }
-
   // 输出 bundle
   generate (code) {
     const filePath = path.join(this.output.path, this.output.filename)
