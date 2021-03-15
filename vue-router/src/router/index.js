@@ -2,7 +2,7 @@ import Vue from 'vue'
 // import VueRouter from 'vue-router'
 import VueRouter from '../vuerouter/index'
 Vue.use(VueRouter)
-
+console.log(VueRouter);
 const routes = [
   {
     path: '/',
