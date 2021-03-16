@@ -5,7 +5,7 @@ Vue.use(VueRouter)
 console.log(VueRouter);
 const routes = [
   {
-    path: '/',
+    path: '/index',
     name: 'index',
     component: () => import('../components/index')
   },

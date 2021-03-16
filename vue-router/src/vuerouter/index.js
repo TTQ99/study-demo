@@ -36,7 +36,9 @@ class Router {
 
     Vue.mixin({
       beforeCreate () {
-
+        if (this.$options.router) {
+          _Vue.prototype.$router = this.$options.router
+        }
       },
     })
   }
@@ -44,7 +46,7 @@ class Router {
   // 创建RouteMap
   createRouteMap () {
     for (const key of this.$options.routes) {
-      this.routeMap[key] = this.$options.routes.component
+      this.routeMap[key.path] = key.component
     }
   }
 
@@ -57,23 +59,32 @@ class Router {
           type: String,
         }
       },
-      // template: `<a :href="#${this.to}"> <slot></slot></a>`
       render (h) {
         return h('a', {
           attrs: {
-            to: this.props.to
-          }
-        })
+            href: this.to
+          },
+        }, this.$slots.default)
       },
+    })
+
+    _Vue.component('router-view', {
+      render (h) {
+        const { routeMap, data: { current } } = this.$router
+        const component = routeMap[current] ? routeMap[current] : null
+        return h(component)
+      }
     })
   }
 
-  // 
-  initEvent () { }
+  // 注册时间
+  initEvent () {
+    window.addEventListener('hashchange', this.onHashChange.bind(this))
+  }
 
-  // 
+  // 事件处理函数
   onHashChange () {
-
+    this.data.current = window.location.hash.slice(1)
   }
 }
 
