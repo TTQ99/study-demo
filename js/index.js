@@ -27,16 +27,17 @@
 
 // 剩余参数
 
-function fn (){
-  console.log(arguments) //[Arguments] { '0': 1, '1': 2, '2': 3 }
+function fn () {
+  // console.log(arguments) //[Arguments] { '0': 1, '1': 2, '2': 3 }
 }
 
 // function fn (...arguments){
 //   console.log(arguments)  // [1,2,3]
 // }
 
-fn(1,2,3)
+fn(1, 2, 3)
 
-const sun = n => n-1
-console.log(sun(22));
-console.log(sun(22));
+const sun = n => n - 1
+
+
+require('./extend')
