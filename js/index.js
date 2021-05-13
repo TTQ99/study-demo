@@ -32,19 +32,21 @@
 // }
 
 
-const sun = n => n - 1
+// const sun = n => n - 1
 
 
 // require('./copy/index.js')
-function Car () {
-  this.name = 'ttq'
-}
+// function Car () {
+//   this.name = 'ttq'
+// }
 
-const a = new Car()
-a.b = 123
-console.log(a.name)
+// const a = new Car()
+// a.b = 123
+// console.log(a.name)
 
-console.log(
-  Object.getOwnPropertyDescriptor(a, 'name'))
-console.log(
-  Object.getOwnPropertyDescriptors(a))
+// console.log(
+//   Object.getOwnPropertyDescriptor(a, 'name'))
+// console.log(
+//   Object.getOwnPropertyDescriptors(a))
+
+require('./promise/example')
