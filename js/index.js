@@ -27,17 +27,26 @@
 
 // 剩余参数
 
-function fn () {
-  // console.log(arguments) //[Arguments] { '0': 1, '1': 2, '2': 3 }
-}
-
 // function fn (...arguments){
 //   console.log(arguments)  // [1,2,3]
 // }
 
-fn(1, 2, 3)
 
-const sun = n => n - 1
+// const sun = n => n - 1
 
 
-require('./extend')
+// require('./copy/index.js')
+// function Car () {
+//   this.name = 'ttq'
+// }
+
+// const a = new Car()
+// a.b = 123
+// console.log(a.name)
+
+// console.log(
+//   Object.getOwnPropertyDescriptor(a, 'name'))
+// console.log(
+//   Object.getOwnPropertyDescriptors(a))
+
+require('./promise/example')
